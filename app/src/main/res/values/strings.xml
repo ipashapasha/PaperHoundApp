@@ -1,3 +1,55 @@
 <resources>
-    <string name="app_name">PaperHoundApp</string>
+    <string name="app_name">PaperHound</string>
+
+    <string name="shelf_reading">Reading now</string>
+    <string name="shelf_paper_library">Paper library</string>
+    <string name="shelf_audio_library">Audio library</string>
+
+    <string name="see_all">See all</string>
+    <string name="back">Back</string>
+    <string name="close">Close</string>
+    <string name="shelf_empty">Nothing here yet</string>
+
+    <string name="year_goal_title">%d reading goal</string>
+    <string name="year_goal_on_track">Right on schedule</string>
+
+    <plurals name="year_goal_of_books">
+        <item quantity="one">of %d book</item>
+        <item quantity="other">of %d books</item>
+    </plurals>
+    <plurals name="year_goal_ahead">
+        <item quantity="one">%d book ahead of schedule</item>
+        <item quantity="other">%d books ahead of schedule</item>
+    </plurals>
+    <plurals name="year_goal_behind">
+        <item quantity="one">%d book behind schedule</item>
+        <item quantity="other">%d books behind schedule</item>
+    </plurals>
+    <plurals name="books_count">
+        <item quantity="one">%d book</item>
+        <item quantity="other">%d books</item>
+    </plurals>
+
+    <string name="add_book">Add book</string>
+    <string name="new_book">New book</string>
+    <string name="add_cover">Add cover</string>
+    <string name="change_cover">Change cover</string>
+    <string name="format_paper">Paper book</string>
+    <string name="format_audio">Audiobook</string>
+    <string name="field_title">Title</string>
+    <string name="field_required">Required</string>
+    <string name="field_isbn">ISBN</string>
+    <string name="field_link">Link to book page</string>
+    <string name="field_optional">Optional</string>
+    <string name="field_finished_on">Finished on</string>
+    <string name="pick_date">Pick date</string>
+    <string name="rating">Rating</string>
+    <string name="rating_awful">Awful</string>
+    <string name="rating_bad">Bad</string>
+    <string name="rating_okay">Okay</string>
+    <string name="rating_good">Good</string>
+    <string name="rating_great">Great</string>
+    <string name="add_to_collection">Add to collection</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 </resources>
