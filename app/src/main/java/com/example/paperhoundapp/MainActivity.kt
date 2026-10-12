@@ -13,7 +13,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PaperHoundAppTheme {
-                PaperHoundNavHost()
+                val app = application as PaperHoundApplication
+                PaperHoundNavHost(app.bookRepository, app.goalRepository)
             }
         }
     }

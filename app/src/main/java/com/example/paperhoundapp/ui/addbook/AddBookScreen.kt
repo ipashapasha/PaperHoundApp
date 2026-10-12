@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,11 +27,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.DateRange
 import androidx.compose.material3.Button
@@ -45,6 +48,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.ToggleButton
@@ -84,6 +88,7 @@ import com.example.paperhoundapp.data.Book
 import com.example.paperhoundapp.data.BookFormat
 import com.example.paperhoundapp.data.BookRepository
 import com.example.paperhoundapp.data.Rating
+import com.example.paperhoundapp.data.ReadingStatus
 import com.example.paperhoundapp.ui.theme.PaperHoundAppTheme
 import com.example.paperhoundapp.ui.theme.paperBackground
 import java.time.Instant
@@ -98,7 +103,7 @@ private val isbnAllowedChars = Regex("[0-9Xx-]")
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun AddBookScreen(onClose: () -> Unit, modifier: Modifier = Modifier) {
+fun AddBookScreen(onSubmit: (Book) -> Unit, onClose: () -> Unit, modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
     var coverUri by rememberSaveable { mutableStateOf<String?>(null) }
@@ -106,7 +111,9 @@ fun AddBookScreen(onClose: () -> Unit, modifier: Modifier = Modifier) {
     var title by rememberSaveable { mutableStateOf("") }
     var isbn by rememberSaveable { mutableStateOf("") }
     var link by rememberSaveable { mutableStateOf("") }
+    var readingNow by rememberSaveable { mutableStateOf(true) }
     var finishedOnEpochDay by rememberSaveable { mutableStateOf(LocalDate.now().toEpochDay()) }
+    var startedOnEpochDay by rememberSaveable { mutableStateOf<Long?>(null) }
     var rating by rememberSaveable { mutableStateOf<Rating?>(null) }
     var showDatePicker by rememberSaveable { mutableStateOf(false) }
 
@@ -122,16 +129,18 @@ fun AddBookScreen(onClose: () -> Unit, modifier: Modifier = Modifier) {
 
     val canSubmit = title.isNotBlank()
     val submit = {
-        BookRepository.add(
+        onSubmit(
             Book(
                 id = BookRepository.newId(),
                 title = title.trim(),
                 format = format,
-                finishedAt = LocalDate.ofEpochDay(finishedOnEpochDay),
+                status = if (readingNow) ReadingStatus.Reading else ReadingStatus.Finished,
+                startedAt = startedOnEpochDay?.takeIf { readingNow }?.let(LocalDate::ofEpochDay),
+                finishedAt = LocalDate.ofEpochDay(finishedOnEpochDay).takeIf { !readingNow },
                 isbn = isbn.trim().ifEmpty { null },
                 link = link.trim().ifEmpty { null },
                 coverUri = coverUri,
-                rating = rating,
+                rating = rating.takeIf { !readingNow },
             ),
         )
         onClose()
@@ -223,20 +232,32 @@ fun AddBookScreen(onClose: () -> Unit, modifier: Modifier = Modifier) {
                 modifier = Modifier.fillMaxWidth(),
             )
 
-            DateField(
-                date = LocalDate.ofEpochDay(finishedOnEpochDay),
-                onClick = { showDatePicker = true },
-            )
+            ReadingNowSwitch(readingNow, onReadingNowChange = { readingNow = it })
 
-            RatingSelector(rating, onRatingChange = { rating = it })
+            if (readingNow) {
+                DateField(
+                    date = startedOnEpochDay?.let(LocalDate::ofEpochDay),
+                    labelRes = R.string.field_started_on,
+                    onClick = { showDatePicker = true },
+                    onClear = { startedOnEpochDay = null },
+                )
+            } else {
+                DateField(
+                    date = LocalDate.ofEpochDay(finishedOnEpochDay),
+                    labelRes = R.string.field_finished_on,
+                    onClick = { showDatePicker = true },
+                )
+
+                RatingSelector(rating, onRatingChange = { rating = it })
+            }
         }
     }
 
     if (showDatePicker) {
-        FinishedOnDatePicker(
-            initial = LocalDate.ofEpochDay(finishedOnEpochDay),
+        BookDatePicker(
+            initial = LocalDate.ofEpochDay(if (readingNow) startedOnEpochDay ?: LocalDate.now().toEpochDay() else finishedOnEpochDay),
             onConfirm = {
-                finishedOnEpochDay = it.toEpochDay()
+                if (readingNow) startedOnEpochDay = it.toEpochDay() else finishedOnEpochDay = it.toEpochDay()
                 showDatePicker = false
             },
             onDismiss = { showDatePicker = false },
@@ -312,7 +333,39 @@ private fun FormatSelector(format: BookFormat, onFormatChange: (BookFormat) -> U
 }
 
 @Composable
-private fun DateField(date: LocalDate, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun ReadingNowSwitch(readingNow: Boolean, onReadingNowChange: (Boolean) -> Unit, modifier: Modifier = Modifier) {
+    Row(
+        modifier
+            .fillMaxWidth()
+            .toggleable(value = readingNow, role = Role.Switch, onValueChange = onReadingNowChange),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(
+                text = stringResource(R.string.reading_now_toggle),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Text(
+                text = stringResource(R.string.reading_now_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Spacer(Modifier.width(16.dp))
+        // The row handles toggling, so the switch itself is decorative.
+        Switch(checked = readingNow, onCheckedChange = null)
+    }
+}
+
+/** A null [date] renders an empty optional field; [onClear] adds a button to reset it. */
+@Composable
+private fun DateField(
+    date: LocalDate?,
+    @StringRes labelRes: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    onClear: (() -> Unit)? = null,
+) {
     // A read-only text field consumes taps, so open the picker on press release instead.
     val interactionSource = remember { MutableInteractionSource() }
     LaunchedEffect(interactionSource) {
@@ -321,13 +374,24 @@ private fun DateField(date: LocalDate, onClick: () -> Unit, modifier: Modifier =
         }
     }
     OutlinedTextField(
-        value = date.format(dateFormatter),
+        value = date?.format(dateFormatter).orEmpty(),
         onValueChange = {},
         readOnly = true,
-        label = { Text(stringResource(R.string.field_finished_on)) },
+        label = { Text(stringResource(labelRes)) },
+        supportingText = if (onClear != null) {
+            { Text(stringResource(R.string.field_optional)) }
+        } else {
+            null
+        },
         trailingIcon = {
-            IconButton(onClick = onClick) {
-                Icon(Icons.Rounded.DateRange, contentDescription = stringResource(R.string.pick_date))
+            if (date != null && onClear != null) {
+                IconButton(onClick = onClear) {
+                    Icon(Icons.Rounded.Clear, contentDescription = stringResource(R.string.clear_date))
+                }
+            } else {
+                IconButton(onClick = onClick) {
+                    Icon(Icons.Rounded.DateRange, contentDescription = stringResource(R.string.pick_date))
+                }
             }
         },
         interactionSource = interactionSource,
@@ -337,7 +401,7 @@ private fun DateField(date: LocalDate, onClick: () -> Unit, modifier: Modifier =
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FinishedOnDatePicker(initial: LocalDate, onConfirm: (LocalDate) -> Unit, onDismiss: () -> Unit) {
+private fun BookDatePicker(initial: LocalDate, onConfirm: (LocalDate) -> Unit, onDismiss: () -> Unit) {
     val state = rememberDatePickerState(
         initialSelectedDateMillis = initial.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli(),
     )
@@ -415,6 +479,6 @@ private fun RatingSelector(rating: Rating?, onRatingChange: (Rating?) -> Unit, m
 @Composable
 private fun AddBookScreenPreview() {
     PaperHoundAppTheme(dynamicColor = false) {
-        AddBookScreen(onClose = {})
+        AddBookScreen(onSubmit = {}, onClose = {})
     }
 }

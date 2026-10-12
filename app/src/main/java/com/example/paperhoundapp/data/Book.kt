@@ -1,6 +1,8 @@
 package com.example.paperhoundapp.data
 
 import androidx.annotation.StringRes
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.example.paperhoundapp.R
 import java.time.LocalDate
 
@@ -16,13 +18,16 @@ enum class Rating(val emoji: String, @StringRes val labelRes: Int) {
     Great("😄", R.string.rating_great),
 }
 
+@Entity(tableName = "books")
 data class Book(
-    val id: String,
+    @PrimaryKey val id: String,
     val title: String,
     val author: String? = null,
     val format: BookFormat = BookFormat.Paper,
     val status: ReadingStatus = ReadingStatus.Finished,
     val addedAt: LocalDate = LocalDate.now(),
+    /** Optional for books that are still being read. */
+    val startedAt: LocalDate? = null,
     val finishedAt: LocalDate? = null,
     val isbn: String? = null,
     val link: String? = null,

@@ -27,16 +27,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.paperhoundapp.R
-import com.example.paperhoundapp.data.BookRepository
+import com.example.paperhoundapp.data.Book
+import com.example.paperhoundapp.data.SampleBooks
 import com.example.paperhoundapp.data.Shelf
+import com.example.paperhoundapp.data.shelf
 import com.example.paperhoundapp.ui.components.BookCard
 import com.example.paperhoundapp.ui.theme.PaperHoundAppTheme
 import com.example.paperhoundapp.ui.theme.paperBackground
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun ShelfScreen(shelf: Shelf, onBack: () -> Unit, modifier: Modifier = Modifier) {
-    val books = BookRepository.shelf(shelf)
+fun ShelfScreen(shelf: Shelf, allBooks: List<Book>, onBack: () -> Unit, modifier: Modifier = Modifier) {
+    val books = allBooks.shelf(shelf)
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val layoutDirection = LocalLayoutDirection.current
 
@@ -81,6 +83,6 @@ fun ShelfScreen(shelf: Shelf, onBack: () -> Unit, modifier: Modifier = Modifier)
 @Composable
 private fun ShelfScreenPreview() {
     PaperHoundAppTheme(dynamicColor = false) {
-        ShelfScreen(Shelf.PaperLibrary, onBack = {})
+        ShelfScreen(Shelf.PaperLibrary, SampleBooks.all, onBack = {})
     }
 }
