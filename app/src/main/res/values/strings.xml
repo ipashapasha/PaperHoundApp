@@ -42,6 +42,10 @@
     <string name="field_link">Link to book page</string>
     <string name="field_optional">Optional</string>
     <string name="field_finished_on">Finished on</string>
+    <string name="field_started_on">Started on</string>
+    <string name="reading_now_toggle">Reading now</string>
+    <string name="reading_now_hint">Not finished yet, the date is optional</string>
+    <string name="clear_date">Clear date</string>
     <string name="pick_date">Pick date</string>
     <string name="rating">Rating</string>
     <string name="rating_awful">Awful</string>

@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PaperHoundAppTheme {
-                PaperHoundNavHost()
+                PaperHoundNavHost((application as PaperHoundApplication).bookRepository)
             }
         }
     }

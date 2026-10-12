@@ -40,7 +40,10 @@ import androidx.compose.ui.unit.dp
 import com.example.paperhoundapp.R
 import com.example.paperhoundapp.data.Book
 import com.example.paperhoundapp.data.BookRepository
+import com.example.paperhoundapp.data.SampleBooks
 import com.example.paperhoundapp.data.Shelf
+import com.example.paperhoundapp.data.finishedInYear
+import com.example.paperhoundapp.data.shelf
 import com.example.paperhoundapp.ui.components.BookCard
 import com.example.paperhoundapp.ui.theme.PaperHoundAppTheme
 import com.example.paperhoundapp.ui.theme.paperBackground
@@ -53,6 +56,7 @@ private const val PREVIEW_BOOK_COUNT = 3
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun HomeScreen(
+    books: List<Book>,
     onOpenShelf: (Shelf) -> Unit,
     onAddBook: () -> Unit,
     modifier: Modifier = Modifier,
@@ -92,31 +96,31 @@ fun HomeScreen(
                 )
             }
             item {
-                ShelfSection(Shelf.Reading, onSeeAll = { onOpenShelf(Shelf.Reading) }, modifier = sectionModifier)
+                ShelfSection(Shelf.Reading, books, onSeeAll = { onOpenShelf(Shelf.Reading) }, modifier = sectionModifier)
             }
             item {
                 YearProgressCard(
                     year = today.year,
                     dayOfYear = today.dayOfYear,
                     daysInYear = today.lengthOfYear(),
-                    finished = BookRepository.finishedInYear(today.year),
+                    finished = books.finishedInYear(today.year),
                     goal = BookRepository.YEARLY_GOAL,
                     modifier = sectionModifier,
                 )
             }
             item {
-                ShelfSection(Shelf.PaperLibrary, onSeeAll = { onOpenShelf(Shelf.PaperLibrary) }, modifier = sectionModifier)
+                ShelfSection(Shelf.PaperLibrary, books, onSeeAll = { onOpenShelf(Shelf.PaperLibrary) }, modifier = sectionModifier)
             }
             item {
-                ShelfSection(Shelf.AudioLibrary, onSeeAll = { onOpenShelf(Shelf.AudioLibrary) }, modifier = sectionModifier)
+                ShelfSection(Shelf.AudioLibrary, books, onSeeAll = { onOpenShelf(Shelf.AudioLibrary) }, modifier = sectionModifier)
             }
         }
     }
 }
 
 @Composable
-private fun ShelfSection(shelf: Shelf, onSeeAll: () -> Unit, modifier: Modifier = Modifier) {
-    val books = BookRepository.shelf(shelf)
+private fun ShelfSection(shelf: Shelf, allBooks: List<Book>, onSeeAll: () -> Unit, modifier: Modifier = Modifier) {
+    val books = allBooks.shelf(shelf)
     Column(modifier) {
         SectionHeader(
             title = stringResource(shelf.titleRes),
@@ -227,6 +231,6 @@ private fun YearProgressCard(
 @Composable
 private fun HomeScreenPreview() {
     PaperHoundAppTheme(dynamicColor = false) {
-        HomeScreen(onOpenShelf = {}, onAddBook = {})
+        HomeScreen(SampleBooks.all, onOpenShelf = {}, onAddBook = {})
     }
 }
