@@ -20,8 +20,6 @@ class BookRepository(private val dao: BookDao) {
     }
 
     companion object {
-        const val YEARLY_GOAL = 12
-
         fun newId(): String = UUID.randomUUID().toString()
     }
 }
@@ -35,5 +33,3 @@ fun List<Book>.shelf(shelf: Shelf): List<Book> = when (shelf) {
 private fun List<Book>.finished(format: BookFormat) =
     filter { it.status == ReadingStatus.Finished && it.format == format }
         .sortedByDescending { it.finishedAt }
-
-fun List<Book>.finishedInYear(year: Int): Int = count { it.finishedAt?.year == year }

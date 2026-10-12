@@ -10,6 +10,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.paperhoundapp.data.BookRepository
+import com.example.paperhoundapp.data.GoalRepository
+import com.example.paperhoundapp.data.ReadingGoal
 import com.example.paperhoundapp.data.Shelf
 import com.example.paperhoundapp.ui.addbook.AddBookScreen
 import com.example.paperhoundapp.ui.home.HomeScreen
@@ -21,13 +23,20 @@ private const val SHELF_ARG = "shelf"
 private const val SHELF_ROUTE = "shelf/{$SHELF_ARG}"
 
 @Composable
-fun PaperHoundNavHost(repository: BookRepository, modifier: Modifier = Modifier) {
+fun PaperHoundNavHost(
+    repository: BookRepository,
+    goalRepository: GoalRepository,
+    modifier: Modifier = Modifier,
+) {
     val navController = rememberNavController()
     val books by repository.books.collectAsState(initial = emptyList())
+    val goal by goalRepository.goal.collectAsState(initial = ReadingGoal())
     NavHost(navController, startDestination = HOME_ROUTE, modifier = modifier) {
         composable(HOME_ROUTE) {
             HomeScreen(
                 books = books,
+                goal = goal,
+                onGoalChange = goalRepository::update,
                 onOpenShelf = { shelf -> navController.navigate("shelf/${shelf.name}") },
                 onAddBook = { navController.navigate(ADD_BOOK_ROUTE) },
             )

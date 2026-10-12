@@ -111,7 +111,7 @@ fun AddBookScreen(onSubmit: (Book) -> Unit, onClose: () -> Unit, modifier: Modif
     var title by rememberSaveable { mutableStateOf("") }
     var isbn by rememberSaveable { mutableStateOf("") }
     var link by rememberSaveable { mutableStateOf("") }
-    var readingNow by rememberSaveable { mutableStateOf(false) }
+    var readingNow by rememberSaveable { mutableStateOf(true) }
     var finishedOnEpochDay by rememberSaveable { mutableStateOf(LocalDate.now().toEpochDay()) }
     var startedOnEpochDay by rememberSaveable { mutableStateOf<Long?>(null) }
     var rating by rememberSaveable { mutableStateOf<Rating?>(null) }

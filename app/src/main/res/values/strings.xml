@@ -10,8 +10,22 @@
     <string name="close">Close</string>
     <string name="shelf_empty">Nothing here yet</string>
 
-    <string name="year_goal_title">%d reading goal</string>
+    <string name="goal_title_year">%d reading goal</string>
+    <string name="goal_title_month">%s reading goal</string>
+    <string name="goal_title_week">This week\'s reading goal</string>
     <string name="year_goal_on_track">Right on schedule</string>
+    <string name="edit_goal">Edit goal</string>
+    <string name="goal_period">Goal period</string>
+    <string name="goal_period_year">Year</string>
+    <string name="goal_period_month">Month</string>
+    <string name="goal_period_week">Week</string>
+    <string name="goal_target">Books to read</string>
+    <string name="goal_target_error">Enter at least 1 book</string>
+    <string name="goal_already_read_year">Already read this year</string>
+    <string name="goal_already_read_month">Already read this month</string>
+    <string name="goal_already_read_week">Already read this week</string>
+    <string name="goal_already_read_hint">Books you finished before using PaperHound</string>
+    <string name="save">Save</string>
 
     <plurals name="year_goal_of_books">
         <item quantity="one">of %d book</item>
