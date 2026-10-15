@@ -14,7 +14,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             PaperHoundAppTheme {
                 val app = application as PaperHoundApplication
-                PaperHoundNavHost(app.bookRepository, app.goalRepository)
+                PaperHoundNavHost(app.bookRepository, app.goalRepository, app.descriptionRepository)
             }
         }
     }

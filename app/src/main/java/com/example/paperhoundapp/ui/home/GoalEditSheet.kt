@@ -15,7 +15,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -35,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.example.paperhoundapp.R
 import com.example.paperhoundapp.data.GoalPeriod
 import com.example.paperhoundapp.data.ReadingGoal
+import com.example.paperhoundapp.ui.components.UnderlinedTextField
 import java.time.LocalDate
 
 private const val MAX_DIGITS = 4
@@ -83,22 +83,17 @@ fun GoalEditSheet(
                 PeriodSelector(period, onPeriodChange = { period = it })
             }
 
-            OutlinedTextField(
+            UnderlinedTextField(
                 value = target,
                 onValueChange = { input -> target = input.filter(Char::isDigit).take(MAX_DIGITS) },
                 label = { Text(stringResource(R.string.goal_target)) },
-                supportingText = if (targetValue == null) {
-                    { Text(stringResource(R.string.goal_target_error)) }
-                } else {
-                    null
-                },
                 isError = targetValue == null,
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
                 modifier = Modifier.fillMaxWidth(),
             )
 
-            OutlinedTextField(
+            UnderlinedTextField(
                 value = alreadyRead,
                 onValueChange = { input -> alreadyRead = input.filter(Char::isDigit).take(MAX_DIGITS) },
                 label = { Text(stringResource(period.alreadyReadLabelRes)) },

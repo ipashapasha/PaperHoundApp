@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.paperhoundapp.data.BookDescriptionRepository
 import com.example.paperhoundapp.data.BookRepository
 import com.example.paperhoundapp.data.GoalRepository
 import com.example.paperhoundapp.data.ReadingGoal
@@ -26,6 +27,7 @@ private const val SHELF_ROUTE = "shelf/{$SHELF_ARG}"
 fun PaperHoundNavHost(
     repository: BookRepository,
     goalRepository: GoalRepository,
+    descriptionRepository: BookDescriptionRepository,
     modifier: Modifier = Modifier,
 ) {
     val navController = rememberNavController()
@@ -51,6 +53,7 @@ fun PaperHoundNavHost(
         composable(ADD_BOOK_ROUTE) {
             AddBookScreen(
                 onSubmit = repository::add,
+                findDescriptions = descriptionRepository::find,
                 onClose = { navController.popBackStack() },
             )
         }
