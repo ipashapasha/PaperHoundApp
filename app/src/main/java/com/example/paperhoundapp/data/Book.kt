@@ -29,9 +29,7 @@ data class Book(
     /** Optional for books that are still being read. */
     val startedAt: LocalDate? = null,
     val finishedAt: LocalDate? = null,
-    val isbn: String? = null,
-    val link: String? = null,
-    /** Content URI of a cover picked from the device. */
+    /** Cover picked from the device (content URI), saved from Google Books (file URI) or, if saving failed, its link. */
     val coverUri: String? = null,
     val rating: Rating? = null,
 )

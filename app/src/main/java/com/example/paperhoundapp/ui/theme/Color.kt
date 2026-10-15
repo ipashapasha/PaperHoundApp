@@ -60,3 +60,15 @@ val WarmDarkColorScheme = darkColorScheme(
     outline = Color(0xFF9C9084),
     outlineVariant = Color(0xFF4E463E),
 )
+
+// Soft beige underline for text fields, a bit stronger while the field is focused.
+val FieldUnderlineLight = Color(0xFFE2D4BF)
+val FieldUnderlineFocusedLight = Color(0xFFCBB394)
+val FieldUnderlineDark = Color(0xFF51483D)
+val FieldUnderlineFocusedDark = Color(0xFF8A7860)
+
+// Light beige for secondary actions next to a primary button, like adding a book read earlier.
+val BeigeButtonLight = Color(0xFFF1E4D1)
+val OnBeigeButtonLight = Color(0xFF6B5138)
+val BeigeButtonDark = Color(0xFF4A4034)
+val OnBeigeButtonDark = Color(0xFFEBDAC3)

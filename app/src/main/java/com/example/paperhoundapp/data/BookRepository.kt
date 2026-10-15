@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 /** Books stored in the local Room database. */
-class BookRepository(private val dao: BookDao) {
+class BookRepository(private val dao: BookDao, private val covers: CoverStorage) {
 
     // Writes outlive the screen that started them, e.g. the add-book screen closing right after submit.
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -16,7 +16,11 @@ class BookRepository(private val dao: BookDao) {
     val books: Flow<List<Book>> = dao.observeAll()
 
     fun add(book: Book) {
-        scope.launch { dao.insert(book) }
+        scope.launch {
+            // A cover found online is saved locally; if that fails the link is kept and loaded from the network.
+            val savedCover = book.coverUri?.takeIf { it.isRemoteUrl() }?.let { covers.save(book.id, it) }
+            dao.insert(if (savedCover != null) book.copy(coverUri = savedCover) else book)
+        }
     }
 
     companion object {
