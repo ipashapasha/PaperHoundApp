@@ -30,7 +30,22 @@ class ShortenDescriptionTest {
     }
 
     @Test
+    fun textOfExactlyMaxLengthIsKept() {
+        val text = "a".repeat(400)
+        assertEquals(text, text.shortenDescription())
+    }
+
+    @Test
+    fun punctuationBeforeTheEllipsisIsDropped() {
+        assertEquals("one two…", "one two, three four".shortenDescription(maxLength = 12))
+        assertEquals("one two…", "one two. three four".shortenDescription(maxLength = 12))
+    }
+
+    @Test
     fun titlesMatchIgnoringCaseAndPunctuation() {
+        assertEquals("dune", "Dune [Illustrated Edition]".normalizedTitle())
+        assertEquals("1984", "1984!".normalizedTitle())
+        assertEquals("мастер и маргарита", "Мастер и Маргарита".normalizedTitle())
         assertEquals("dune".normalizedTitle(), "  Dune. ".normalizedTitle())
         assertEquals("project hail mary", "Project Hail Mary (Movie Tie-In)".normalizedTitle())
         assertEquals("the hobbit or there and back again", "The Hobbit, or There and Back Again".normalizedTitle())

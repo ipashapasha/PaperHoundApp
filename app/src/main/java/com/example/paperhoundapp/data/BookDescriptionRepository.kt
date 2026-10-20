@@ -18,8 +18,12 @@ data class BookDescription(val text: String, val sourceUrl: String?, val author:
 
 const val MAX_DESCRIPTION_LENGTH = 400
 
-/** Looks up English book descriptions in the Google Books API. */
-class BookDescriptionRepository(private val apiKey: String) {
+/** Looks up English book descriptions in the Google Books API; the URL and retry budget are swapped in tests. */
+class BookDescriptionRepository(
+    private val apiKey: String,
+    private val volumesUrl: String = VOLUMES_URL,
+    private val retryBudgetMillis: Long = RETRY_BUDGET_MILLIS,
+) {
 
     // Successful answers by query, so searching the same title again doesn't wait on the flaky API.
     private val cache = ConcurrentHashMap<String, List<BookDescription>>()
@@ -48,7 +52,7 @@ class BookDescriptionRepository(private val apiKey: String) {
     // Google Books often fails most requests with 503 backendFailed for a while, independent of the query,
     // and any single retry may get through, so keep retrying quickly until the time budget runs out.
     private suspend fun requestWithRetry(query: String): String {
-        val deadline = System.currentTimeMillis() + RETRY_BUDGET_MILLIS
+        val deadline = System.currentTimeMillis() + retryBudgetMillis
         var attempt = 0
         while (true) {
             try {
@@ -64,7 +68,7 @@ class BookDescriptionRepository(private val apiKey: String) {
     }
 
     private fun request(query: String): String {
-        val url = VOLUMES_URL.toUri().buildUpon()
+        val url = volumesUrl.toUri().buildUpon()
             // Not intitle:, which currently returns no results at all.
             .appendQueryParameter("q", query)
             .appendQueryParameter("langRestrict", "en")
